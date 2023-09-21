@@ -1,57 +1,55 @@
-let maxScore = document.querySelector("#max-score");
-let player1Score = document.querySelector("#player1-score");
-let player2Score = document.querySelector("#player2-score");
+const p1 = {
+    score: 0,
+    button: document.querySelector('#p1Button'),
+    display: document.querySelector('#p1Display')
+}
+const p2 = {
+    score: 0,
+    button: document.querySelector('#p2Button'),
+    display: document.querySelector('#p2Display')
+}
 
-let btnP1 = document.querySelector("#btnP1");
-let btnP2 = document.querySelector("#btnP2");
-let btnReset = document.querySelector("#reset");
+const resetButton = document.querySelector('#reset');
+const winningScoreSelect = document.querySelector('#playto');
+let winningScore = 3;
+let isGameOver = false;
 
-let isPlaying = true;
-let p1Count = 0;
-let p2Count = 0;
+function updateScores(player, opponent) {
+    if (!isGameOver) {
+        player.score += 1;
+        if (player.score === winningScore) {
+            isGameOver = true;
+            player.display.classList.add('has-text-success');
+            opponent.display.classList.add('has-text-danger');
+            player.button.disabled = true;
+            opponent.button.disabled = true;
+        }
+        player.display.textContent = player.score;
+    }
+}
 
-btnP1.addEventListener("click", (e) => {
-  if (p1Count != maxScore.value && isPlaying) {
-    p1Count += 1;
-    player1Score.innerText = p1Count;
-  } else {
-    player1Score.classList.add("has-text-success");
-    player2Score.classList.add("has-text-danger");
-    btnP1.disabled = true;
-    btnP2.disabled = true;
-    isPlaying = false;
-  }
-});
 
-btnP2.addEventListener("click", (e) => {
-  if (p2Count != maxScore.value && isPlaying) {
-    p2Count += 1;
-    player2Score.innerText = p2Count;
-  } else {
-    player1Score.classList.add("has-text-danger");
-    player2Score.classList.add("has-text-success");
-    btnP1.disabled = true;
-    btnP2.disabled = true;
-    isPlaying = false;
-  }
-});
+p1.button.addEventListener('click', function () {
+    updateScores(p1, p2)
+})
+p2.button.addEventListener('click', function () {
+    updateScores(p2, p1)
+})
 
-btnReset.addEventListener("click", (e) => {
-  p1Count = 0;
-  p2Count = 0;
-  player1Score.innerText = p1Count;
-  player2Score.innerText = p2Count;
-  player1Score.classList.remove("has-text-success", "has-text-danger");
-  player2Score.classList.remove("has-text-success", "has-text-danger");
-  isPlaying = true;
-  btnP1.disabled = false;
-  btnP2.disabled = false;
-});
 
-maxScore.addEventListener("change", () => {
-  p1Count = 0;
-  p2Count = 0;
-  player1Score.innerText = p1Count;
-  player2Score.innerText = p2Count;
-  isPlaying = true;
-});
+winningScoreSelect.addEventListener('change', function () {
+    winningScore = parseInt(this.value);
+    reset();
+})
+
+resetButton.addEventListener('click', reset)
+
+function reset() {
+    isGameOver = false;
+    for (let p of [p1, p2]) {
+        p.score = 0;
+        p.display.textContent = 0;
+        p.display.classList.remove('has-text-success', 'has-text-danger');
+        p.button.disabled = false;
+    }
+}
